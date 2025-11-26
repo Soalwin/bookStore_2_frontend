@@ -31,7 +31,7 @@ const Header = () => {
               <FontAwesomeIcon className=' text-2xl' icon={faInstagram} />
               <FontAwesomeIcon className=' text-2xl' icon={faFacebookF} />
               <FontAwesomeIcon className=' text-2xl ' icon={faXTwitter} />
-              {/* <Link to={'/login'}><button className=' border-2 rounded p-2 font-bold ms-5' ><FontAwesomeIcon icon={faUser} /> Login</button></Link> */}
+              <Link to={'/login'}><button className=' border-2 rounded p-2 font-bold ms-5' ><FontAwesomeIcon icon={faUser} /> Login</button></Link>
               {/* // dropdown */}
               <div className="relative inline-block text-left">
                 <div>
@@ -98,7 +98,7 @@ const Header = () => {
 
       <div className=' bg-black w-screen p-2 flex justify-between md:hidden'>
         <button onClick={show}><FontAwesomeIcon className=' text-3xl text-white ms-5' icon={faBars} /></button>
-        {/* <Link to={'/login'}><button className=' border-2 rounded p-2 font-bold ms-5 text-white me-5' ><FontAwesomeIcon className=' text-white' icon={faUser} /> Login</button></Link> */}
+        <Link to={'/login'}><button className=' border-2 rounded p-2 font-bold ms-5 text-white me-5' ><FontAwesomeIcon className=' text-white' icon={faUser} /> Login</button></Link>
         {/* // dropdown */}
         <div className="relative inline-block text-left">
           <div>
