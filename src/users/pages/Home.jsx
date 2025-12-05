@@ -1,11 +1,71 @@
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../../components/Footer'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { homeBooksApi } from '../../services/allApis'
+import { searchKeyContext } from '../../context/ContextShare'
+import { toast, ToastContainer } from 'react-toastify'
+
+
+
+
 
 const Home = () => {
+
+  const [homeBooks, setHomeBooks] = useState([])
+
+  const { searchKey, setSearchKey } = useContext(searchKeyContext)
+
+  const navigate = useNavigate()
+
+
+
+
+  const getHomeBooks = async () => {
+
+    const result = await homeBooksApi()
+    const arr = result.data
+    console.log(arr);
+    setHomeBooks(arr)
+
+  }
+
+
+  const handleSearch = () => {
+
+    const token=sessionStorage.getItem('token')
+
+    if(searchKey==''){
+      toast.info('please fill.')
+    }else if(!token){
+      toast.info('please login')
+      setTimeout(() => {
+
+        navigate('/login')
+        
+      }, 2000);
+    }else if(searchKey && token){
+
+      navigate('/all-books')
+
+    }else{
+      toast.error('something went wrong')
+    }
+
+  }
+
+
+  useEffect(() => {
+
+    getHomeBooks()
+    setSearchKey('')
+
+  }, [])
+
+
+
   return (
     <>
       <Header />
@@ -20,11 +80,13 @@ const Home = () => {
                 <p className="mt-2 text-sm md:text-base">Give your family and friends a book</p>
                 <div className="mt-5 flex justify-center items-center">
                   <input
+                    onChange={(e) => setSearchKey(e.target.value)}
                     placeholder="Search Book"
                     className="ps-5 pe-5 text-black bg-white rounded-full w-56 md:w-64 p-2"
                     type="text"
                   />
                   <FontAwesomeIcon
+                    onClick={handleSearch}
                     style={{ marginLeft: '-35px' }}
                     className="text-2xl text-black"
                     icon={faMagnifyingGlass}
@@ -42,52 +104,32 @@ const Home = () => {
             <h2 className="text-2xl font-bold">NEW ARRIVALS</h2>
             <h4 className="text-gray-600">Explore Our Latest Collection</h4>
           </section>
-  
+
           <div className="px-5 md:px-40">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-5 gap-6">
-              <div className="p-3 flex flex-col items-center text-center">
-                <img
-                  className="w-full max-w-xs rounded-md shadow-md"
-                  src="https://www.designforwriters.com/wp-content/uploads/2017/10/design-for-writers-book-cover-tf-2-a-million-to-one.jpg"
-                  alt=""
-                />
-                <p>Author</p>
-                <p>Title</p>
-                <p>Price</p>
-              </div>
-              <div className="p-3 flex flex-col items-center text-center">
-                <img
-                  className="w-full max-w-xs rounded-md shadow-md"
-                  src="https://www.designforwriters.com/wp-content/uploads/2017/10/design-for-writers-book-cover-tf-2-a-million-to-one.jpg"
-                  alt=""
-                />
-                <p>Author</p>
-                <p>Title</p>
-                <p>Price</p>
-              </div>
-              <div className="p-3 flex flex-col items-center text-center">
-                <img
-                  className="w-full max-w-xs rounded-md shadow-md"
-                  src="https://www.designforwriters.com/wp-content/uploads/2017/10/design-for-writers-book-cover-tf-2-a-million-to-one.jpg"
-                  alt=""
-                />
-                <p>Author</p>
-                <p>Title</p>
-                <p>Price</p>
-              </div>
-              <div className="p-3 flex flex-col items-center text-center">
-                <img
-                  className="w-full max-w-xs rounded-md shadow-md"
-                  src="https://www.designforwriters.com/wp-content/uploads/2017/10/design-for-writers-book-cover-tf-2-a-million-to-one.jpg"
-                  alt=""
-                />
-                <p>Author</p>
-                <p>Title</p>
-                <p>Price</p>
-              </div>
+              {homeBooks &&
+
+                homeBooks?.map(book => (
+
+                  <div className="p-3 flex flex-col items-center text-center">
+                    <img
+                      className="w-full max-w-xs rounded-md shadow-md"
+                      src={book?.imgUrl}
+                      alt="cover page"
+                    />
+                    <p>{book?.author}</p>
+                    <p>{book?.title}</p>
+                    <p>{book?.price}</p>
+                  </div>
+
+                ))
+
+
+              }
+
             </div>
           </div>
-  
+
           <div className="flex justify-center items-center my-8">
             <Link to={'/all-books'}>
               <button className="bg-blue-900 text-white p-3 rounded-xl border border-blue-900 hover:bg-white hover:text-blue-900 transition">
@@ -146,6 +188,7 @@ const Home = () => {
         </section>
       </div>
 
+      <ToastContainer theme='colored' position='top-center' autoClose='2000' />
       <Footer />
     </>
   )

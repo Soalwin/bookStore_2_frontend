@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../../components/Footer'
 import { faCircleCheck, faL, faSquarePlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import EditProfile from '../components/EditProfile'
+import { toast, ToastContainer } from 'react-toastify'
+import { addBookApi } from '../../services/allApis'
 
 const Profile = () => {
 
@@ -11,6 +13,169 @@ const Profile = () => {
   const [sellBookSatus, setSellBookStatus] = useState(true)
   const [userBookStatus, setUserBookStatus] = useState(false)
   const [purchaseBook, setPurchaseBook] = useState(false)
+
+
+  const [bookDetails, setBookDetails] = useState({
+    title: '',
+    author: '',
+    nop: '',
+    imgUrl: '',
+    price: '',
+    discountPrice: '',
+    abstract: '',
+    publisher: '',
+    language: '',
+    isbn: '',
+    category: '',
+    uploadImg: []
+  })
+
+  const [preview, setPreview] = useState('')
+  const [previewList, setPreviewList] = useState([])
+
+  const [token, setToken] = useState('')
+  //console.log(bookDetails);
+
+
+  const handleUpload = (e) => {
+
+    console.log(e.target.files[0]);
+
+    const fileArray = bookDetails.uploadImg
+    fileArray.push(e.target.files[0])
+    setBookDetails({ ...bookDetails, uploadImg: fileArray })
+
+    console.log(bookDetails);
+
+    if (previewList.length < 3) {
+      const url = URL.createObjectURL(e.target.files[0])
+      console.log(url);
+      const a = previewList
+      a.push(url)
+      setPreview(a)
+      setPreviewList(a)
+
+    } else {
+
+      toast.error('Only 3 images allowed.')
+
+    }
+
+
+  }
+
+
+  const handleReset = () => {
+
+    setBookDetails({
+      title: '',
+      author: '',
+      nop: '',
+      imgUrl: '',
+      price: '',
+      discountPrice: '',
+      abstract: '',
+      publisher: '',
+      language: '',
+      isbn: '',
+      category: '',
+      uploadImg: []
+    })
+
+    setPreview('')
+    setPreviewList([])
+
+  }
+
+
+  const handleSubmit = async () => {
+
+    const { title, author, nop, imgUrl, price, discountPrice, abstract, publisher, language, isbn, category, uploadImg } = bookDetails
+
+    console.log(title, author, nop, imgUrl, price, discountPrice, abstract, publisher, language, isbn, category, uploadImg);
+
+
+    if (!title || !author || !nop || !imgUrl || !price || !discountPrice || !abstract || !publisher || !language || !isbn || !category || uploadImg.length == 0) {
+
+      toast.warning("Please fill all the fields")
+
+    } else {
+
+      console.log(token);
+
+      const reqHeader = {
+        Authorization: `Bearer ${token}`
+      }
+
+      const reqBody = new FormData()
+
+      for (let key in bookDetails) {
+
+        if (key != "uploadImg") {
+
+          reqBody.append(key, bookDetails[key])
+
+        } else {
+
+          bookDetails.uploadImg.forEach((item) => {
+
+            reqBody.append("uploadImg", item)
+
+          })
+
+        }
+
+      }
+
+      console.log(reqBody, reqHeader, bookDetails);
+
+      const result = await addBookApi(reqBody, reqHeader)
+      console.log(result);
+
+      if (result.status == 200) {
+
+        toast.success("Book added")
+        setBookDetails({
+          title: '',
+          author: '',
+          nop: '',
+          imgUrl: '',
+          price: '',
+          discountPrice: '',
+          abstract: '',
+          publisher: '',
+          language: '',
+          isbn: '',
+          category: '',
+          uploadImg: []
+        })
+
+        setPreview('')
+        setPreviewList([])
+
+      } else if (result.status == 400) {
+
+        toast.error("Book not added, failed!")
+
+      } else {
+
+        toast.error("Something went wrong")
+
+      }
+
+    }
+
+  }
+
+
+  useEffect(() => {
+
+    if (sessionStorage.getItem('token')) {
+      const token = sessionStorage.getItem('token')
+      setToken(token)
+    }
+
+  }, [])
 
 
 
@@ -55,57 +220,91 @@ const Profile = () => {
           <div className=' md:grid md:grid-cols-2 mt-5 w-full'>
             <div className=' md:px-3'>
               <div className=' mb-3'>
-                <input placeholder='title' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
+                <input value={bookDetails.title} onChange={(e) => setBookDetails({ ...bookDetails, title: e.target.value })} placeholder='title' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
               </div>
               <div className=' mb-3'>
-                <input placeholder='Author' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
+                <input value={bookDetails.author} onChange={(e) => setBookDetails({ ...bookDetails, author: e.target.value })} placeholder='Author' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
               </div>
               <div className=' mb-3'>
-                <input placeholder='No of Pages' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
+                <input value={bookDetails.nop} onChange={(e) => setBookDetails({ ...bookDetails, nop: e.target.value })} placeholder='No of Pages' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
               </div>
               <div className=' mb-3'>
-                <input placeholder='Image URL' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
+                <input value={bookDetails.imgUrl} onChange={(e) => setBookDetails({ ...bookDetails, imgUrl: e.target.value })} placeholder='Image URL' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
               </div>
               <div className=' mb-3'>
-                <input placeholder='Price' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
+                <input value={bookDetails.price} onChange={(e) => setBookDetails({ ...bookDetails, price: e.target.value })} placeholder='Price' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
               </div>
               <div className=' mb-3'>
-                <textarea placeholder='Abstractt' className=' h-60 p-2 bg-white rounded placeholder-gray-500 w-full' name="" id=""></textarea>
+                <input value={bookDetails.discountPrice} onChange={(e) => setBookDetails({ ...bookDetails, discountPrice: e.target.value })} placeholder='Discount Price' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
+              </div>
+              <div className=' mb-3'>
+                <textarea value={bookDetails.abstract} onChange={(e) => setBookDetails({ ...bookDetails, abstract: e.target.value })} placeholder='Abstract' className=' h-60 p-2 bg-white rounded placeholder-gray-500 w-full' name="" id=""></textarea>
               </div>
 
             </div>
             <div className=' md:px-3'>
               <div className=' mb-3'>
-                <input placeholder='Publisher' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
+                <input value={bookDetails.publisher} onChange={(e) => setBookDetails({ ...bookDetails, publisher: e.target.value })} placeholder='Publisher' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
               </div>
               <div className=' mb-3'>
-                <input placeholder='Language' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
+                <input value={bookDetails.language} onChange={(e) => setBookDetails({ ...bookDetails, language: e.target.value })} placeholder='Language' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
               </div>
               <div className=' mb-3'>
-                <input placeholder='ISBN' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
+                <input value={bookDetails.isbn} onChange={(e) => setBookDetails({ ...bookDetails, isbn: e.target.value })} placeholder='ISBN' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
               </div>
               <div className=' mb-3'>
-                <input placeholder='Category' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
+                <input value={bookDetails.category} onChange={(e) => setBookDetails({ ...bookDetails, category: e.target.value })} placeholder='Category' type="text" className=' p-2 bg-white rounded placeholder-gray-500 w-full' />
               </div>
               <div className=' mb-3 flex justify-center-safe items-center w-full'>
-                <label htmlFor="imagefile">
-                  <input type="file" name="" id="imagefile" style={{ display: "none" }} />
-                  <img src="https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Image-Upload-Icon-Graphics-10388650-1-1-580x386.jpg" alt="" style={{ height: "200px" }} />
-                </label>
+                {!preview ?
+
+                  <label htmlFor="imagefile">
+                    <input type="file" name="" id="imagefile" style={{ display: "none" }} onChange={(e) => handleUpload(e)} />
+                    <img src="https://www.creativefabrica.com/wp-content/uploads/2021/04/05/Image-Upload-Icon-Graphics-10388650-1-1-580x386.jpg" alt="" style={{ height: "200px" }} />
+                  </label>
+
+                  :
+
+                  <label htmlFor="imagefile">
+                    <img src={preview} alt="" style={{ height: "200px" }} />
+                  </label>
+
+                }
 
               </div>
 
-              <div className=' flex justify-center items-center gap-3'>
-                <img src="https://marketplace.canva.com/EAFbWl4xunQ/2/0/1024w/canva-neutral-minimalist-aesthetic-finance-basics-for-women-guide-ebook-cover-NLo1dMhwsSw.jpg" alt="" style={{ width: "70px" }} />
-                <FontAwesomeIcon icon={faSquarePlus} className=' text-5xl' />
-              </div>
+              {preview &&
+
+                <div className=' flex justify-center items-center gap-3'>
+
+
+                  {previewList?.map((item) => (
+
+                    <img src={item} alt="" style={{ width: "70px" }} />
+
+                  ))
+
+                  }
+
+
+                  <label htmlFor="imagefile">
+
+                    <input type="file" name="" id="imagefile" style={{ display: "none" }} onChange={(e) => handleUpload(e)} />
+
+                    <FontAwesomeIcon icon={faSquarePlus} className=' text-5xl' />
+                  </label>
+
+
+                </div>
+
+              }
             </div>
 
           </div>
           <div className=' flex justify-end'>
             <div className=' flex justify-center items-center gap-3 mt-5'>
-              <button className=' border p-2 text-white bg-red-600 rounded hover:border hover:bg-white hover:border-red-600 hover:text-red-600'>Reset</button>
-              <button className='p-2 border text-white bg-green-600 rounded hover:border hover:bg-white hover:border-green-600 hover:text-green-600'>Submit</button>
+              <button onClick={handleReset} className=' border p-2 text-white bg-red-600 rounded hover:border hover:bg-white hover:border-red-600 hover:text-red-600'>Reset</button>
+              <button onClick={handleSubmit} className='p-2 border text-white bg-green-600 rounded hover:border hover:bg-white hover:border-green-600 hover:text-green-600'>Submit</button>
             </div>
           </div>
 
@@ -123,9 +322,9 @@ const Profile = () => {
                 <p>Abstract : Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos, modi. Quisquam, magni voluptates reprehenderit voluptatibus blanditiis tempore modi cumque quod minima quas omnis consectetur debitis dolore laudantium vitae quos neque.</p>
 
                 <div className=' flex'>
-                  <img src="https://psdstamps.com/wp-content/uploads/2022/04/pending-stamp-png.png" style={{width:"120px"}} alt="Pending..." />
-                  <img src="https://www.citypng.com/public/uploads/preview/hd-green-round-approved-stamp-png-7017516946281143xalzzggez.png?v=2025090208" style={{width:"100px"}} alt="Pending..." />
-                  <img src="https://png.pngtree.com/png-vector/20230607/ourmid/pngtree-rejected-stamp-with-red-color-vector-png-image_7121303.png" style={{width:"100px"}} alt="Pending..." />
+                  <img src="https://psdstamps.com/wp-content/uploads/2022/04/pending-stamp-png.png" style={{ width: "120px" }} alt="Pending..." />
+                  <img src="https://www.citypng.com/public/uploads/preview/hd-green-round-approved-stamp-png-7017516946281143xalzzggez.png?v=2025090208" style={{ width: "100px" }} alt="Pending..." />
+                  <img src="https://png.pngtree.com/png-vector/20230607/ourmid/pngtree-rejected-stamp-with-red-color-vector-png-image_7121303.png" style={{ width: "100px" }} alt="Pending..." />
                 </div>
               </div>
               <div>
@@ -158,9 +357,9 @@ const Profile = () => {
                 <p>Abstract : Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos, modi. Quisquam, magni voluptates reprehenderit voluptatibus blanditiis tempore modi cumque quod minima quas omnis consectetur debitis dolore laudantium vitae quos neque.</p>
 
                 <div className=' flex'>
-                  <img src="https://psdstamps.com/wp-content/uploads/2022/04/pending-stamp-png.png" style={{width:"120px"}} alt="Pending..." />
-                  <img src="https://www.citypng.com/public/uploads/preview/hd-green-round-approved-stamp-png-7017516946281143xalzzggez.png?v=2025090208" style={{width:"100px"}} alt="Pending..." />
-                  <img src="https://png.pngtree.com/png-vector/20230607/ourmid/pngtree-rejected-stamp-with-red-color-vector-png-image_7121303.png" style={{width:"100px"}} alt="Pending..." />
+                  <img src="https://psdstamps.com/wp-content/uploads/2022/04/pending-stamp-png.png" style={{ width: "120px" }} alt="Pending..." />
+                  <img src="https://www.citypng.com/public/uploads/preview/hd-green-round-approved-stamp-png-7017516946281143xalzzggez.png?v=2025090208" style={{ width: "100px" }} alt="Pending..." />
+                  <img src="https://cdn-icons-png.flaticon.com/512/6188/6188726.png" style={{ width: "100px" }} alt="Pending..." />
                 </div>
               </div>
               <div>
@@ -183,7 +382,11 @@ const Profile = () => {
       }
 
 
+
+
       <Footer />
+
+      <ToastContainer theme='colored' position='top-center' autoClose='2000' />
     </div>
   )
 }

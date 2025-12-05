@@ -14,6 +14,7 @@ import Profile from "./users/pages/Profile"
 import AdminHome from "./admin/pages/AdminHome"
 import { AdminBooks } from "./admin/pages/AdminBooks"
 import AdminSettings from "./admin/pages/AdminSettings"
+import ViewBooks from "./users/pages/ViewBooks"
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
         {/* <Route path="/careers" element={<Careers/>} /> */}
         <Route path="/contact" element={<Contact />} />
         <Route path="/all-books" element={<AllBooks />} />
+        <Route path="/view-book/:id" element={<ViewBooks />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Pagenotfound />} />
 

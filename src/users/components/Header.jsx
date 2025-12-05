@@ -1,13 +1,14 @@
 import { faFacebookF, faInstagram, faLinkedinIn, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import { faAddressCard, faBars, faL, faPowerOff, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const Header = () => {
 
   const [visible, setVisible] = useState(false)
   const [dropDownStatus, setDropDownStatus] = useState(false)
+  const [token, setToken] = useState("")
 
   const show = () => {
 
@@ -18,6 +19,18 @@ const Header = () => {
     }
 
   }
+
+  useEffect(() => {
+
+    if (sessionStorage.getItem("token")) {
+      const t = sessionStorage.getItem("token")
+      setToken(t)
+    }
+
+  }, [])
+
+  //console.log(token);
+
 
 
   return (
@@ -31,55 +44,64 @@ const Header = () => {
               <FontAwesomeIcon className=' text-2xl' icon={faInstagram} />
               <FontAwesomeIcon className=' text-2xl' icon={faFacebookF} />
               <FontAwesomeIcon className=' text-2xl ' icon={faXTwitter} />
-              <Link to={'/login'}><button className=' border-2 rounded p-2 font-bold ms-5' ><FontAwesomeIcon icon={faUser} /> Login</button></Link>
-              {/* // dropdown */}
-              <div className="relative inline-block text-left">
-                <div>
-                  <button
-                    type="button"
-                    className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs  hover:bg-gray-50"
-                    id="menu-button"
-                    aria-expanded="true"
-                    aria-haspopup="true"
-                    onClick={() => setDropDownStatus(!dropDownStatus)}
+
+              {!token ?
+
+                <Link to={'/login'}><button className=' border-2 rounded p-2 font-bold ms-5' ><FontAwesomeIcon icon={faUser} /> Login</button></Link>
+
+                :
+
+                // dropdown 
+                <div className="relative inline-block text-left">
+                  <div>
+                    <button
+                      type="button"
+                      className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs  hover:bg-gray-50"
+                      id="menu-button"
+                      aria-expanded="true"
+                      aria-haspopup="true"
+                      onClick={() => setDropDownStatus(!dropDownStatus)}
+                    >
+
+                      <img src="https://cdn-icons-png.flaticon.com/512/8792/8792047.png" alt="UserLogin" style={{ width: "40px", height: '40px', borderRadius: "50%" }} />
+
+                    </button>
+                  </div>
+
+                  {dropDownStatus && <div
+                    className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden"
+                    role="menu"
+                    aria-orientation="vertical"
+                    aria-labelledby="menu-button"
+                    tabIndex="-1"
                   >
-  
-                    <img src="https://cdn-icons-png.flaticon.com/512/8792/8792047.png" alt="UserLogin" style={{ width: "40px", height: '40px', borderRadius: "50%" }} />
-  
-                  </button>
-                </div>
-  
-                {dropDownStatus && <div
-                  className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden"
-                  role="menu"
-                  aria-orientation="vertical"
-                  aria-labelledby="menu-button"
-                  tabIndex="-1"
-                >
-                  <div className="py-1" role="none">
-                    <Link to={'/profile'}>
-                      <p
+                    <div className="py-1" role="none">
+                      <Link to={'/profile'}>
+                        <p
+                          className="block px-4 py-2 text-sm text-gray-700"
+                          role="menuitem"
+                          tabIndex="-1"
+                          id="menu-item-0"
+                        >
+                          <FontAwesomeIcon icon={faAddressCard} className="me-2" />{" "}
+                          Profile
+                        </p>
+                      </Link>
+                      <button
                         className="block px-4 py-2 text-sm text-gray-700"
                         role="menuitem"
                         tabIndex="-1"
-                        id="menu-item-0"
+                        id="menu-item-1"
                       >
-                        <FontAwesomeIcon icon={faAddressCard} className="me-2" />{" "}
-                        Profile
-                      </p>
-                    </Link>
-                    <button
-                      className="block px-4 py-2 text-sm text-gray-700"
-                      role="menuitem"
-                      tabIndex="-1"
-                      id="menu-item-1"
-                    >
-                      <FontAwesomeIcon icon={faPowerOff} className="me-2" />
-                      Logout
-                    </button>
-                  </div>
-                </div>}
-              </div>
+                        <FontAwesomeIcon icon={faPowerOff} className="me-2" />
+                        Logout
+                      </button>
+                    </div>
+                  </div>}
+                </div>
+              }
+
+
             </div>
           </div>
         </div>
@@ -98,55 +120,63 @@ const Header = () => {
 
       <div className=' bg-black w-screen p-2 flex justify-between md:hidden'>
         <button onClick={show}><FontAwesomeIcon className=' text-3xl text-white ms-5' icon={faBars} /></button>
-        <Link to={'/login'}><button className=' border-2 rounded p-2 font-bold ms-5 text-white me-5' ><FontAwesomeIcon className=' text-white' icon={faUser} /> Login</button></Link>
-        {/* // dropdown */}
-        <div className="relative inline-block text-left">
-          <div>
-            <button
-              type="button"
-              className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs  hover:bg-gray-50"
-              id="menu-button"
-              aria-expanded="true"
-              aria-haspopup="true"
-              onClick={() => setDropDownStatus(!dropDownStatus)}
+
+        {!token ?
+
+          <Link to={'/login'}><button className=' border-2 rounded p-2 font-bold ms-5 text-white me-5' ><FontAwesomeIcon className=' text-white' icon={faUser} /> Login</button></Link>
+
+          :
+
+          // dropdown 
+          <div className="relative inline-block text-left">
+            <div>
+              <button
+                type="button"
+                className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs  hover:bg-gray-50"
+                id="menu-button"
+                aria-expanded="true"
+                aria-haspopup="true"
+                onClick={() => setDropDownStatus(!dropDownStatus)}
+              >
+
+                <img src="https://cdn-icons-png.flaticon.com/512/8792/8792047.png" alt="UserLogin" style={{ width: "40px", height: '40px', borderRadius: "50%" }} />
+
+              </button>
+            </div>
+
+
+            {dropDownStatus && <div
+              className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="menu-button"
+              tabIndex="-1"
             >
-
-              <img src="https://cdn-icons-png.flaticon.com/512/8792/8792047.png" alt="UserLogin" style={{ width: "40px", height: '40px', borderRadius: "50%" }} />
-
-            </button>
-          </div>
-
-          {dropDownStatus && <div
-            className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="menu-button"
-            tabIndex="-1"
-          >
-            <div className="py-1" role="none">
-              <Link to={'/profile'}>
-                <p
+              <div className="py-1" role="none">
+                <Link to={'/profile'}>
+                  <p
+                    className="block px-4 py-2 text-sm text-gray-700"
+                    role="menuitem"
+                    tabIndex="-1"
+                    id="menu-item-0"
+                  >
+                    <FontAwesomeIcon icon={faAddressCard} className="me-2" />{" "}
+                    Profile
+                  </p>
+                </Link>
+                <button
                   className="block px-4 py-2 text-sm text-gray-700"
                   role="menuitem"
                   tabIndex="-1"
-                  id="menu-item-0"
+                  id="menu-item-1"
                 >
-                  <FontAwesomeIcon icon={faAddressCard} className="me-2" />{" "}
-                  Profile
-                </p>
-              </Link>
-              <button
-                className="block px-4 py-2 text-sm text-gray-700"
-                role="menuitem"
-                tabIndex="-1"
-                id="menu-item-1"
-              >
-                <FontAwesomeIcon icon={faPowerOff} className="me-2" />
-                Logout
-              </button>
-            </div>
-          </div>}
-        </div>
+                  <FontAwesomeIcon icon={faPowerOff} className="me-2" />
+                  Logout
+                </button>
+              </div>
+            </div>}
+          </div>
+        }
       </div>
       {
         visible ?

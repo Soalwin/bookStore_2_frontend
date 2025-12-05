@@ -11,7 +11,7 @@ body{
 
 
 header{
-  background-image: url('https://www.shutterstock.com/shutterstock/videos/1100888035/thumb/1.jpg?ip=x480');
+  background-image: url('https://png.pngtree.com/background/20230527/original/pngtree-an-old-bookcase-in-a-library-picture-image_2760144.jpg');
   height: 660px;
   width: 100%;
   background-position: center;
@@ -42,4 +42,10 @@ header{
 
   background: rgba(69, 61, 58, 0.668);
 
+}
+
+
+#cardView{
+
+  background-color: rgba(0, 0, 0, 0.349);
 }

@@ -3,7 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
-import { loginApi, registerApi } from '../services/allApis'
+import { googleLoginApi, loginApi, registerApi } from '../services/allApis'
+import { GoogleLogin } from '@react-oauth/google'
+import { jwtDecode } from 'jwt-decode'
 
 const Auth = ({ register }) => {
 
@@ -37,15 +39,15 @@ const Auth = ({ register }) => {
         })
         nav('/login')
 
-      }else if(reg.status==400){
+      } else if (reg.status == 400) {
         toast.warning(reg.response.data)
         setUserDetails({
           username: "",
           email: "",
           password: ""
         })
-        nav('/login') 
-      } 
+        nav('/login')
+      }
       else {
         toast.error("Something went wrong")
         setUserDetails({
@@ -59,35 +61,64 @@ const Auth = ({ register }) => {
     }
   }
 
-  const handleLogin =async()=>{
-    const {email,password}=userDetails
-    if(!email || !password){
+  const handleLogin = async () => {
+    const { email, password } = userDetails
+    if (!email || !password) {
       toast.info("pplese fill the form")
 
     }
-    else{
+    else {
 
-      const result = await loginApi({email,password})
+      const result = await loginApi({ email, password })
       console.log(result);
 
-      if(result.status==200){
+      if (result.status == 200) {
         toast.success("Login sucessfull...")
-        sessionStorage.setItem("existingUser",JSON.stringify(result.data.existingUser))
-        sessionStorage.setItem("token",result.data.token)
+        sessionStorage.setItem("existingUser", JSON.stringify(result.data.existingUser))
+        sessionStorage.setItem("token", result.data.token)
 
 
-        setTimeout(()=>{
-          if(result.data.existingUser.email=="bookStoreAdmin@gmail.com"){
+        setTimeout(() => {
+          if (result.data.existingUser.email == "bookStoreAdmin@gmail.com") {
             nav('/admin-home')
           }
-          else{
+          else {
             nav('/')
           }
-        },3000)
+        }, 2000)
 
       }
-      
+
     }
+  }
+
+  const handleGoogleLogin = async (credentialResponse) => {
+
+    const details = jwtDecode(credentialResponse.credential)
+    console.log(details);
+    const result = await googleLoginApi({ username: details.name, email: details.email, password: "Googlepass123", photo: details.picture })
+    console.log(result);
+
+    if (result.status == 200) {
+
+      toast.success('Login sucessfull.')
+      sessionStorage.setItem("existingUser", JSON.stringify(result.data.existingUser))
+      sessionStorage.setItem("token", result.data.token)
+
+
+      setTimeout(() => {
+        if (result.data.existingUser.email == "bookStoreAdmin@gmail.com") {
+          nav('/admin-home')
+        }
+        else {
+          nav('/')
+        }
+      }, 2000)
+
+    }
+
+
+
   }
 
 
@@ -139,8 +170,19 @@ const Auth = ({ register }) => {
 
             <p className=' mb-5 text-white'> OR </p>
 
-            {!register && <div className=' mb-5 w-full'>
-              <button className=' bg-white text-black w-full rounded p-2 text-xl'>Sign In With Google</button>
+            {!register && <div className=' mb-5 w-full flex justify-center'>
+              {/* <button className=' bg-white text-black w-full rounded p-2 text-xl'>Sign In With Google</button> */}
+
+              <GoogleLogin
+                onSuccess={credentialResponse => {
+                  console.log(credentialResponse);
+                  handleGoogleLogin(credentialResponse)
+                }}
+                onError={() => {
+                  console.log('Login Failed');
+                }}
+              />;
+
             </div>}
 
             {!register ? <p className=' text-center text-white'>Are you a new User? <Link to={'/register'}>Register</Link></p>
