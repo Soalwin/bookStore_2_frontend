@@ -1,14 +1,28 @@
 import { faFacebookF, faInstagram, faLinkedinIn, faXTwitter } from '@fortawesome/free-brands-svg-icons'
 import { faAddressCard, faBars, faL, faPowerOff, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { userProfileContext } from '../../context/ContextShare'
+import { serverURL } from '../../services/serverURL'
 
 const Header = () => {
+
+  const { userProfile } = useContext(userProfileContext)
 
   const [visible, setVisible] = useState(false)
   const [dropDownStatus, setDropDownStatus] = useState(false)
   const [token, setToken] = useState("")
+
+  const [un, setUn] = useState({
+
+    username: "",
+    profile: "",
+    bio: ""
+
+  })
+
+  const nav = useNavigate()
 
   const show = () => {
 
@@ -20,6 +34,13 @@ const Header = () => {
 
   }
 
+  const handleLogOut = () => {
+
+    sessionStorage.clear()
+    nav('/')
+
+  }
+
   useEffect(() => {
 
     if (sessionStorage.getItem("token")) {
@@ -27,7 +48,16 @@ const Header = () => {
       setToken(t)
     }
 
-  }, [])
+    if (sessionStorage.getItem('existingUser')) {
+
+
+      const user = JSON.parse(sessionStorage.getItem('existingUser'))
+      setUn({ username: user.username, profile: user.profile, bio: user.bio })
+
+    }
+
+
+  }, [userProfile])
 
   //console.log(token);
 
@@ -63,7 +93,7 @@ const Header = () => {
                       onClick={() => setDropDownStatus(!dropDownStatus)}
                     >
 
-                      <img src="https://cdn-icons-png.flaticon.com/512/8792/8792047.png" alt="UserLogin" style={{ width: "40px", height: '40px', borderRadius: "50%" }} />
+                      <img src={un ? `${serverURL}/upload/${un.profile}` : "https://cdn-icons-png.flaticon.com/512/8792/8792047.png"} alt="UserLogin" style={{ width: "40px", height: '40px', borderRadius: "50%" }} />
 
                     </button>
                   </div>
@@ -87,7 +117,7 @@ const Header = () => {
                           Profile
                         </p>
                       </Link>
-                      <button
+                      <button onClick={handleLogOut}
                         className="block px-4 py-2 text-sm text-gray-700"
                         role="menuitem"
                         tabIndex="-1"
@@ -139,7 +169,7 @@ const Header = () => {
                 onClick={() => setDropDownStatus(!dropDownStatus)}
               >
 
-                <img src="https://cdn-icons-png.flaticon.com/512/8792/8792047.png" alt="UserLogin" style={{ width: "40px", height: '40px', borderRadius: "50%" }} />
+                <img src={un ? `${serverURL}/upload/${un.profile}` : "https://cdn-icons-png.flaticon.com/512/8792/8792047.png"} alt="UserLogin" style={{ width: "40px", height: '40px', borderRadius: "50%" }} />
 
               </button>
             </div>
@@ -165,6 +195,7 @@ const Header = () => {
                   </p>
                 </Link>
                 <button
+                  onClick={handleLogOut}
                   className="block px-4 py-2 text-sm text-gray-700"
                   role="menuitem"
                   tabIndex="-1"

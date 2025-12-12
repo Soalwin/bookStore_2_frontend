@@ -50,3 +50,59 @@ export const viewBookApi= async(id)=>{
    return await commonApi("get",`${serverURL}/view-book/${id}`)
 
 }
+
+export const allBooksByUserApi= async(reqHeader)=>{
+
+   return await commonApi("get",`${serverURL}/user-added-books`,'',reqHeader)
+
+}
+
+export const allBooksBroughtByApi= async(reqHeader)=>{
+
+   return await commonApi("get",`${serverURL}/user-brought-books`,'',reqHeader)
+
+}
+
+export const deleteBookApi= async(id)=>{
+
+   return await commonApi("delete",`${serverURL}/delete-book/${id}`)
+
+}
+
+
+
+
+//..........adin.........
+
+export const allBooksAdminApi= async(reqHeader)=>{
+
+   return await commonApi("get",`${serverURL}/admin-all-books`,'',reqHeader)
+
+}
+
+export const approveBooksApi= async(reqBody,reqHeader)=>{
+
+   return await commonApi("put",`${serverURL}/approve-books`,reqBody,reqHeader)
+
+}
+
+export const getAllUsersApi= async(reqHeader)=>{
+
+   return await commonApi("get",`${serverURL}/all-users`,'',reqHeader)
+
+}
+
+// update admin
+export const adminProfileUpdateApi= async(reqBody,reqHeader)=>{
+
+   return await commonApi("put",`${serverURL}/admin-profile-update`,reqBody,reqHeader)
+
+}
+
+// update user
+export const userProfileUpdateApi= async(reqBody,reqHeader)=>{
+
+   return await commonApi("put",`${serverURL}/user-profile-update`,reqBody,reqHeader)
+
+}
+

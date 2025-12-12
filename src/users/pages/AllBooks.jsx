@@ -116,7 +116,7 @@ const AllBooks = () => {
 
                                 allBooks.map((book,index) => (
 
-                                    <div key={index} className="p-3 flex flex-col items-center text-center">
+                                    <div key={index} className="p-3 flex flex-col items-center text-center" hidden={book?.status=="pending" || book?.status=="sold"}>
                                         <img
                                             className="w-full max-w-xs rounded-md shadow-md"
                                             src={book.imgUrl}

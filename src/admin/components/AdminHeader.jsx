@@ -1,9 +1,21 @@
 import { faPowerOff } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const AdminHeader = () => {
+
+    const nav=useNavigate()
+
+
+    const handleLogOut=()=>{
+
+        sessionStorage.clear()
+        nav('/')
+
+    }
+
+
     return (
         <div>
             <div className=' h-20 bg-white flex justify-between items-center py-3 px-2 sm:px-5 md:px-10'>
@@ -12,7 +24,7 @@ const AdminHeader = () => {
                     <h1 className=' text-xl sm:text-2xl md:text-4xl font-bold text-center'>BookStore</h1>
                 </div>
                 <div>
-                    <button className=' bg-white border-2 p-1 sm:p-2 border-black rounded text-black'><FontAwesomeIcon icon={faPowerOff} />Logout</button>
+                    <button onClick={handleLogOut} className=' bg-white border-2 p-1 sm:p-2 border-black rounded text-black'><FontAwesomeIcon icon={faPowerOff} />Logout</button>
                 </div>
             </div>
             <div>
