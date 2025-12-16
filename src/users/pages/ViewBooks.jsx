@@ -33,7 +33,7 @@ const ViewBooks = () => {
     const makePayment = async () => {
 
 
-        const stripe = await loadStripe('pk_test_51SeWyOIed9e3yjkH3JW53VihednaKW2bNzN4Xz5gMI8BSoDlh2uJFCJXmCYGO6Gm8GTLHTYXMd9xupzC616pZ4LO00yUXqMbol');
+        const stripe = await loadStripe('pk_test_51SeWycRqEAjs26HszB9jfkZ5heV9VNX12kikJGWtBbxoxGthlLoY8bJ6TKHJmhTzLrVERIqK1RVBjM2c2cfbC1rI00mtfHWOHp');
 
         const reqBody = {
             bookDetails: book
