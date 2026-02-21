@@ -76,6 +76,7 @@ const Auth = ({ register }) => {
         toast.success("Login sucessfull...")
         sessionStorage.setItem("existingUser", JSON.stringify(result.data.existingUser))
         sessionStorage.setItem("token", result.data.token)
+        
 
 
         setTimeout(() => {

@@ -44,7 +44,7 @@ const AllBooks = () => {
         if(data=='Allbooks'){
             setAllBooks(tempAllBooks)
         }else{
-            setAllBooks(tempAllBooks.filter(item=>item.category.toLowerCase()==data.toLowerCase()))
+            setAllBooks(tempAllBooks.filter(item=>item.category.toLowerCase()== data.toLowerCase()))
         }
            
     }
@@ -89,9 +89,9 @@ const AllBooks = () => {
                                     <input type="radio" name="filter" id="Story" />
                                     <label htmlFor="Story" className=' ms-3'>Story</label>
                                 </div> */}
-                                <div className=' mt-3' onClick={()=>handleFilter('Self Help')}>
-                                    <input type="radio" name="filter" id="Self Help" />
-                                    <label htmlFor="Self Help" className=' ms-3'>Self Help</label>
+                                <div className=' mt-3' onClick={()=>handleFilter('SelfHelp')}>
+                                    <input type="radio" name="filter" id="SelfHelp" />
+                                    <label htmlFor="SelfHelp" className=' ms-3'>Self Help</label>
                                 </div>
                                 <div className=' mt-3' onClick={()=>handleFilter('Fantasy')}>
                                     <input type="radio" name="filter" id="Fantasy" />
@@ -116,9 +116,10 @@ const AllBooks = () => {
 
                                 allBooks.map((book,index) => (
 
-                                    <div key={index} className="p-3 flex flex-col items-center text-center" hidden={book?.status=="pending" || book?.status=="sold"}>
+                                    <div key={index} className="p-3 flex flex-col items-center text-center" >
+                                        {/* hidden={book?.status=="pending" || book?.status=="sold"} */}
                                         <img
-                                            className="w-full max-w-xs rounded-md shadow-md"
+                                            className="w-full h-80 max-w-xs rounded-md shadow-md"
                                             src={book.imgUrl}
                                             alt="cover page"
                                         />
@@ -131,7 +132,7 @@ const AllBooks = () => {
 
                                 :
 
-                                <p>loading...</p>
+                                <p className='col-span-full flex justify-center items-center text-center h-40 text-lg font-medium text-red-700'>No Books in this category</p>
 
                             }
 
